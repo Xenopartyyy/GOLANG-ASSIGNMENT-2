@@ -4,6 +4,7 @@ import (
 	"h8-assignment-2/dto"
 	"h8-assignment-2/pkg/errs"
 	"h8-assignment-2/service"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -93,6 +94,34 @@ func (oh *orderHandler) UpdateOrder(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(err.Status(), err)
 
+		return
+	}
+
+	ctx.JSON(response.StatusCode, response)
+}
+
+// DeleteOrder godoc
+// @Tags orders
+// @Description Deleting Order Data By Id
+// @ID delete-order
+// @Produce json
+// @Param orderId path int true "order's id"
+// @Success 200 {object} dto.DeleteOrdersResponse
+// @Router /orders/{orderId} [delete]
+func (oh *orderHandler) DeleteOrder(ctx *gin.Context) {
+
+	orderId, err := strconv.Atoi(ctx.Param("orderId"))
+
+	if err != nil {
+		errBindJson := errs.NewUnprocessibleEntityError("invalid orderId")
+		ctx.AbortWithStatusJSON(errBindJson.Status(), errBindJson)
+		return
+	}
+
+	response, err := oh.OrderService.DeleteOrder(orderId)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, err)
 		return
 	}
 

@@ -43,5 +43,7 @@ func StartApp() {
 
 	r.PUT("/orders/:orderId", orderHandler.UpdateOrder)
 
+	r.DELETE("/orders/:orderId", orderHandler.DeleteOrder)
+
 	r.Run(":8080")
 }

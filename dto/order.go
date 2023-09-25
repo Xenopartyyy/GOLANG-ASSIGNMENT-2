@@ -29,3 +29,8 @@ type GetOrdersResponse struct {
 	Message    string           `json:"message"`
 	Data       []OrderWithItems `json:"data"`
 }
+
+type DeleteOrdersResponse struct {
+	StatusCode int    `json:"statusCode"`
+	Message    string `json:"message"`
+}
