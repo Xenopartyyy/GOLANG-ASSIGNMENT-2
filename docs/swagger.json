@@ -95,10 +95,48 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Deleting Order Data By Id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "operationId": "delete-order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "order's id",
+                        "name": "orderId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteOrdersResponse"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "dto.DeleteOrdersResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.GetItemResponse": {
             "type": "object",
             "properties": {

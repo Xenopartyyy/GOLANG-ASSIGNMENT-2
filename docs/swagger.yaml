@@ -1,4 +1,11 @@
 definitions:
+  dto.DeleteOrdersResponse:
+    properties:
+      message:
+        type: string
+      statusCode:
+        type: integer
+    type: object
   dto.GetItemResponse:
     properties:
       createdAt:
@@ -115,6 +122,24 @@ paths:
       tags:
       - orders
   /orders/{orderId}:
+    delete:
+      description: Deleting Order Data By Id
+      operationId: delete-order
+      parameters:
+      - description: order's id
+        in: path
+        name: orderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteOrdersResponse'
+      tags:
+      - orders
     put:
       consumes:
       - application/json
