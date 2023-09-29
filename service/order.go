@@ -30,9 +30,7 @@ func NewOrderService(orderRepo order_repository.Repository, itemRepo item_reposi
 }
 
 func (os *orderService) UpdateOrder(orderId int, newOrderRequest dto.NewOrderRequest) (*dto.NewOrderResponse, errs.Error) {
-
 	_, err := os.OrderRepo.ReadOrderById(orderId)
-
 	if err != nil {
 		return nil, err
 	}
@@ -53,11 +51,8 @@ func (os *orderService) UpdateOrder(orderId int, newOrderRequest dto.NewOrderReq
 		isFound := false
 
 		for _, eachItem := range items {
-
 			if eachItem.OrderId != orderId {
-
 				return nil, errs.NewBadRequest(fmt.Sprintf("item with item code %s doesn't belong to the order with id %d", eachItem.ItemCode, orderId))
-
 			}
 
 			if eachItemFromRequest.ItemCode == eachItem.ItemCode {
@@ -81,7 +76,6 @@ func (os *orderService) UpdateOrder(orderId int, newOrderRequest dto.NewOrderReq
 		}
 
 		itemPayload = append(itemPayload, item)
-
 	}
 
 	orderPayload := entity.Order{
@@ -96,10 +90,48 @@ func (os *orderService) UpdateOrder(orderId int, newOrderRequest dto.NewOrderReq
 		return nil, err
 	}
 
+	UpdateRespondOrder, err := os.OrderRepo.ReadOrderById(orderId)
+	if err != nil {
+		return nil, err
+	}
+
+	UpdateRespondItem, err := os.ItemRepo.GetItemsByCodes(itemCodes)
+
+	if err != nil {
+		return nil, err
+	}
+
+	orderResult := []dto.OrderWithItems{}
+
+	order := dto.OrderWithItems{
+		OrderId:      UpdateRespondOrder.OrderId,
+		CustomerName: UpdateRespondOrder.CustomerName,
+		OrderedAt:    UpdateRespondOrder.OrderedAt,
+		CreatedAt:    UpdateRespondOrder.CreatedAt,
+		UpdatedAt:    UpdateRespondOrder.UpdatedAt,
+		Items:        []dto.GetItemResponse{},
+	}
+
+	for _, eachItem := range UpdateRespondItem {
+		item := dto.GetItemResponse{
+			ItemId:      eachItem.ItemId,
+			ItemCode:    eachItem.ItemCode,
+			Quantity:    eachItem.Quantity,
+			Description: eachItem.Description,
+			OrderId:     eachItem.OrderId,
+			CreatedAt:   eachItem.CreatedAt,
+			UpdatedAt:   eachItem.UpdatedAt,
+		}
+
+		order.Items = append(order.Items, item)
+	}
+
+	orderResult = append(orderResult, order)
+
 	response := dto.NewOrderResponse{
 		StatusCode: http.StatusOK,
 		Message:    "order successfully updated",
-		Data:       nil,
+		Data:       orderResult,
 	}
 
 	return &response, nil
